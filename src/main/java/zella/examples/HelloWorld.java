@@ -1,17 +1,11 @@
 package zella.examples;
 
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
-import zella.lanternascreens.MyAppController;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -119,12 +113,8 @@ public class HelloWorld {
 
         MyAppController app = new MyAppController();
 
-        app.go1();
+        app.go2();
 
-
-        while (true) {
-            if (!app.getGui().getGUIThread().processEventsAndUpdate())
-                Thread.sleep(1);
-        }
+        app.loop();
     }
 }

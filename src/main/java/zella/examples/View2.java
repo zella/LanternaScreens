@@ -1,13 +1,15 @@
 package zella.examples;
 
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
-import zella.lanternascreens.MyAppController;
+import com.googlecode.lanterna.screen.Screen;
 import zella.lanternascreens.view.View;
+import zella.lanternascreens.view.WindowView;
 
 import java.util.Arrays;
 
-public class View2 implements View {
+public class View2 implements WindowView {
 
     private final MyAppController app;
 
@@ -16,7 +18,7 @@ public class View2 implements View {
     }
 
     @Override
-    public void inflate(MultiWindowTextGUI gui)   {
+    public MultiWindowTextGUI inflate(Screen screen) {
         // Create panel to hold components
         Panel panel = new Panel();
         panel.setLayoutManager(new GridLayout(2));
@@ -33,7 +35,7 @@ public class View2 implements View {
         panel.addComponent(new Button("Submit", new Runnable() {
             @Override
             public void run() {
-                app.go1();
+                app.go3();
             }
         }));
 
@@ -43,18 +45,20 @@ public class View2 implements View {
         window.setHints(Arrays.asList(Window.Hint.CENTERED));
         window.setComponent(panel);
 
+        MultiWindowTextGUI gui = new MultiWindowTextGUI(screen, new DefaultWindowManager(), new EmptySpace(TextColor.ANSI.CYAN));
+
         gui.addWindow(window);
-
-
-    }
-
-    @Override
-    public void onCreate() {
+        return gui;
 
     }
 
     @Override
-    public void onDestroy() {
+    public void viewCreated() {
+
+    }
+
+    @Override
+    public void viewDestroyed() {
 
     }
 

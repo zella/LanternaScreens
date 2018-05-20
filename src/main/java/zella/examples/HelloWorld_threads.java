@@ -111,41 +111,13 @@ public class HelloWorld_threads {
     }
 
 
-
     public static void main(String[] args) throws Exception {
 
         // Setup terminal and screen layers
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
         Screen screen = new TerminalScreen(terminal);
         screen.startScreen();
-
-        Window w1 = newWindow();
-
-//        ex.scheduleAtFixedRate(() -> {
-//            label.setText(UUID.randomUUID().toString());
-//        }, 5, 5, TimeUnit.SECONDS);
-
-        // Create gui and start gui
-        MultiWindowTextGUI gui = new MultiWindowTextGUI(screen, new DefaultWindowManager(), new EmptySpace(TextColor.ANSI.BLUE));
-
-        gui.addWindow(w1);
-
-        ex.schedule(() -> {
-            gui.getGUIThread().invokeLater(() -> w1.close());
-            try {
-                Thread.sleep(3000);
-                gui.getGUIThread().invokeLater(() -> gui.addWindow(newWindow()));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, 3, TimeUnit.SECONDS);
-
-//
-
-        while (true) {
-            if (!gui.getGUIThread().processEventsAndUpdate())
-                Thread.sleep(1);
-        }
+        ui_3(screen);
+        screen.refresh();
     }
 }
