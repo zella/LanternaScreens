@@ -1,7 +1,6 @@
 package zella.examples;
 
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.gui2.*;
@@ -9,14 +8,15 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
-import zella.lanternascreens.MyAppController;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class HelloWorld {
+public class HelloWorld_threads {
 
     static ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
 
@@ -53,7 +53,7 @@ public class HelloWorld {
         return window;
     }
 
-    private static MultiWindowTextGUI ui_1(Screen screen) {
+    private static void ui_1(Screen screen) {
         // Create panel to hold components
         Panel panel = new Panel();
         panel.setLayoutManager(new GridLayout(2));
@@ -74,10 +74,9 @@ public class HelloWorld {
         window.setComponent(panel);
 
         MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
-        return gui;
     }
 
-    private static MultiWindowTextGUI ui_2(Screen screen) {
+    private static void ui_2(Screen screen) {
         // Create panel to hold components
         Panel panel = new Panel();
         panel.setLayoutManager(new GridLayout(2));
@@ -102,28 +101,50 @@ public class HelloWorld {
         MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
 
         gui.addWindow(window);
-        return gui;
-
     }
 
-    private static Screen ui_3(Screen screen) {
+    private static void ui_3(Screen screen) {
         TextGraphics textGraphics = screen.newTextGraphics();
         textGraphics.setForegroundColor(TextColor.ANSI.RED);
         textGraphics.setBackgroundColor(TextColor.ANSI.GREEN);
         textGraphics.putString(10, 5, "ui_3");
-        return screen;
     }
+
 
 
     public static void main(String[] args) throws Exception {
 
-        MyAppController app = new MyAppController();
+        // Setup terminal and screen layers
+        Terminal terminal = new DefaultTerminalFactory().createTerminal();
+        Screen screen = new TerminalScreen(terminal);
+        screen.startScreen();
 
-        app.go1();
+        Window w1 = newWindow();
 
+//        ex.scheduleAtFixedRate(() -> {
+//            label.setText(UUID.randomUUID().toString());
+//        }, 5, 5, TimeUnit.SECONDS);
+
+        // Create gui and start gui
+        MultiWindowTextGUI gui = new MultiWindowTextGUI(screen, new DefaultWindowManager(), new EmptySpace(TextColor.ANSI.BLUE));
+
+        gui.addWindow(w1);
+
+        ex.schedule(() -> {
+            gui.getGUIThread().invokeLater(() -> w1.close());
+            try {
+                Thread.sleep(3000);
+                gui.getGUIThread().invokeLater(() -> gui.addWindow(newWindow()));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 3, TimeUnit.SECONDS);
+
+//
 
         while (true) {
-            if (!app.getGui().getGUIThread().processEventsAndUpdate())
+            if (!gui.getGUIThread().processEventsAndUpdate())
                 Thread.sleep(1);
         }
     }
