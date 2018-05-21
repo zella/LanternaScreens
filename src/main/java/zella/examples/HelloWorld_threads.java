@@ -9,6 +9,7 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -53,7 +54,7 @@ public class HelloWorld_threads {
         return window;
     }
 
-    private static void ui_1(Screen screen) {
+    private static void ui_1(Screen screen) throws IOException {
         // Create panel to hold components
         Panel panel = new Panel();
         panel.setLayoutManager(new GridLayout(2));
@@ -74,9 +75,11 @@ public class HelloWorld_threads {
         window.setComponent(panel);
 
         MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
+        gui.addWindow(window);
+        gui.getGUIThread().processEventsAndUpdate();
     }
 
-    private static void ui_2(Screen screen) {
+    private static void ui_2(Screen screen) throws IOException {
         // Create panel to hold components
         Panel panel = new Panel();
         panel.setLayoutManager(new GridLayout(2));
@@ -101,13 +104,15 @@ public class HelloWorld_threads {
         MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
 
         gui.addWindow(window);
+        gui.getGUIThread().processEventsAndUpdate();
     }
 
-    private static void ui_3(Screen screen) {
+    private static void ui_3(Screen screen) throws IOException {
         TextGraphics textGraphics = screen.newTextGraphics();
         textGraphics.setForegroundColor(TextColor.ANSI.RED);
         textGraphics.setBackgroundColor(TextColor.ANSI.GREEN);
         textGraphics.putString(10, 5, "ui_3");
+        screen.refresh();
     }
 
 
@@ -117,7 +122,23 @@ public class HelloWorld_threads {
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
         Screen screen = new TerminalScreen(terminal);
         screen.startScreen();
-        ui_3(screen);
-        screen.refresh();
+        while (true) {
+
+            ui_1(screen);
+
+            screen.clear();
+            Thread.sleep(1000);
+
+            ui_2(screen);
+
+            screen.clear();
+            Thread.sleep(1000);
+
+            ui_3(screen);
+
+            screen.clear();
+            Thread.sleep(1000);
+//        screen.refresh();
+        }
     }
 }
